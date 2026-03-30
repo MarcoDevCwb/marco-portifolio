@@ -12,13 +12,13 @@ export function MainViewport({ activeSection }: MainViewportProps) {
   return (
     <main className="main-viewport">
       <div className="main-viewport__inner">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={activeSection}
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -18 }}
-            transition={{ duration: 0.28, ease: "easeInOut" }}
+            initial={{ opacity: 1 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 1 }}
+            transition={{ duration: 0 }}
             className="main-viewport__content"
           >
             <SectionNavigator activeSection={activeSection} />

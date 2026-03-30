@@ -185,12 +185,12 @@ canvas {
   }
 }
 
-/* MOBILE RETRATO — VOLTA AO VISUAL ANTIGO */
+/* MOBILE RETRATO */
 @media (max-width: 767px) and (orientation: portrait) {
   .hero-image {
     object-fit: cover;
-    object-position: 25% 20%;
-    transform: scale(1.2) translate(10%, -10%);
+    object-position: 25% 24%;
+    transform: scale(1.14) translate(8%, 0%);
   }
 
   .hero-copy {

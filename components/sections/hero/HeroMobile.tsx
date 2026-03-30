@@ -18,11 +18,11 @@ export function HeroMobile() {
           priority
           sizes="100vw"
           className="
-            object-cover object-[25%_18%]
+            object-cover object-[25%_24%]
             opacity-[0.92]
-            scale-[1.2]
-            translate-x-[10%]
-            -translate-y-[10%]
+            scale-[1.14]
+            translate-x-[8%]
+            will-change-auto
           "
         />
       </div>
