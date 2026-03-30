@@ -10,7 +10,7 @@ export function PortfolioShell() {
   const [activeSection, setActiveSection] = useState<SectionKey>("home")
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-black text-white">
+    <div className="relative min-h-[100svh] w-full overflow-hidden bg-black text-white supports-[height:100dvh]:min-h-[100dvh]">
       <Navbar
         activeSection={activeSection}
         onChangeSection={setActiveSection}

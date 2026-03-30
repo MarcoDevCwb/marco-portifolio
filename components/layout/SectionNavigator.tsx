@@ -1,7 +1,7 @@
 import { AboutSection } from "@/components/sections/AboutSection"
 import { AudioSection } from "@/components/sections/AudioSection"
 import { ContactSection } from "@/components/sections/ContactSection"
-import { HomeSection } from "@/components/sections/HomeSection"
+import { HeroRoot } from "@/components/sections/hero/HeroRoot"
 import { ProjectsSection } from "@/components/sections/ProjectsSection"
 import { StackSection } from "@/components/sections/StackSection"
 import type { SectionKey } from "@/lib/types/navigation"
@@ -26,6 +26,6 @@ export function SectionNavigator({
       return <ContactSection />
     case "home":
     default:
-      return <HomeSection />
+      return <HeroRoot />
   }
 }
