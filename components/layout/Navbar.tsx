@@ -329,7 +329,7 @@ export function Navbar({
 
                     <a
                       href="/cv.pdf"
-                      download="Marco-Lima-CV.pdf"
+                      download="cv.pdf"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="relative mt-2 inline-flex min-h-11 w-full items-center justify-center overflow-hidden rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-white/90 transition-colors duration-200 hover:border-white/20 hover:text-white active:bg-white/10 focus:outline-none focus-visible:outline-none"
