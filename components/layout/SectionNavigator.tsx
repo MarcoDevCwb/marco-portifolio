@@ -1,4 +1,4 @@
-import { AboutSection } from "@/components/sections/AboutSection"
+import { AboutSection } from "@/components/sections/about/AboutSection"
 import { AudioSection } from "@/components/sections/AudioSection"
 import { ContactSection } from "@/components/sections/ContactSection"
 import { HeroRoot } from "@/components/sections/hero/HeroRoot"

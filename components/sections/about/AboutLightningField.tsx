@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import { mapWeatherToLightning } from "@/lib/weather/mapWeatherToLightning"
+import { SimulationEngine } from "@/lib/simulation/systems/simulationEngine"
+import { drawDischarge } from "@/lib/simulation/render/arcPainter"
 
 type WeatherPayload = {
   weatherCode: number
@@ -13,21 +15,6 @@ type WeatherPayload = {
 }
 
 type VisualState = ReturnType<typeof mapWeatherToLightning>
-
-type Point = {
-  x: number
-  y: number
-}
-
-type Arc = {
-  id: string
-  bornAt: number
-  lifeMs: number
-  thickness: number
-  intensity: number
-  points: Point[]
-  branches: Point[][]
-}
 
 type Emitter = {
   x: number
@@ -52,176 +39,10 @@ type SafeZones = {
 
 type AboutLightningFieldProps = {
   intensity: number
-  onIntensityChange?: (value: number) => void
-}
-
-function randomBetween(min: number, max: number) {
-  return Math.random() * (max - min) + min
 }
 
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value))
-}
-
-function distance(a: Point, b: Point) {
-  const dx = b.x - a.x
-  const dy = b.y - a.y
-  return Math.sqrt(dx * dx + dy * dy)
-}
-
-function normalize(dx: number, dy: number) {
-  const len = Math.sqrt(dx * dx + dy * dy) || 1
-  return { x: dx / len, y: dy / len }
-}
-
-function pointsToSegmentsPath(
-  ctx: CanvasRenderingContext2D,
-  points: Point[]
-) {
-  if (points.length === 0) return
-
-  ctx.beginPath()
-  ctx.moveTo(points[0].x, points[0].y)
-
-  for (let i = 1; i < points.length; i++) {
-    const prev = points[i - 1]
-    const curr = points[i]
-    const midX = (prev.x + curr.x) / 2
-    const midY = (prev.y + curr.y) / 2
-    ctx.quadraticCurveTo(prev.x, prev.y, midX, midY)
-  }
-
-  const last = points[points.length - 1]
-  ctx.lineTo(last.x, last.y)
-}
-
-function createBranchFromPoint(
-  origin: Point,
-  direction: Point,
-  chaos: number,
-  energy: number,
-  maxLength: number
-) {
-  const points: Point[] = [origin]
-  let current = { ...origin }
-
-  const steps = Math.floor(randomBetween(4, 8 + energy * 5))
-  const stepLength = maxLength / steps
-
-  for (let i = 0; i < steps; i++) {
-    const lateral = {
-      x: -direction.y,
-      y: direction.x,
-    }
-
-    const jitterForward = randomBetween(0.78, 1.16)
-    const jitterSide = randomBetween(-chaos, chaos) * (0.35 + energy * 0.55)
-
-    current = {
-      x:
-        current.x +
-        direction.x * stepLength * jitterForward +
-        lateral.x * jitterSide,
-      y:
-        current.y +
-        direction.y * stepLength * jitterForward +
-        lateral.y * jitterSide,
-    }
-
-    points.push(current)
-  }
-
-  return points
-}
-
-function generateTeslaArc(
-  emitter: Emitter,
-  width: number,
-  height: number,
-  energy: number,
-  sway: number,
-  branchProbability: number
-): Arc {
-  const angle = randomBetween(-Math.PI, Math.PI)
-  const arcLength = randomBetween(
-    Math.min(width, height) * 0.06,
-    Math.min(width, height) * (0.1 + energy * 0.16)
-  )
-
-  const direction = {
-    x: Math.cos(angle),
-    y: Math.sin(angle),
-  }
-
-  const start: Point = {
-    x: emitter.x + direction.x * emitter.radius * 0.82,
-    y: emitter.y + direction.y * emitter.radius * 0.82,
-  }
-
-  const end: Point = {
-    x: clamp(start.x + direction.x * arcLength, width * 0.08, width * 0.92),
-    y: clamp(start.y + direction.y * arcLength, height * 0.12, height * 0.9),
-  }
-
-  const mainDistance = distance(start, end)
-  const steps = Math.max(8, Math.floor(mainDistance / 14))
-  const mainDirection = normalize(end.x - start.x, end.y - start.y)
-  const lateral = {
-    x: -mainDirection.y,
-    y: mainDirection.x,
-  }
-
-  const points: Point[] = [start]
-  const branches: Point[][] = []
-
-  let current = { ...start }
-
-  for (let i = 1; i < steps; i++) {
-    const t = i / steps
-    const baseX = start.x + (end.x - start.x) * t
-    const baseY = start.y + (end.y - start.y) * t
-
-    const noise =
-      randomBetween(-sway, sway) * (0.18 + energy * 0.38) +
-      Math.sin(t * Math.PI * randomBetween(1.2, 3.2)) * sway * 0.18
-
-    current = {
-      x: baseX + lateral.x * noise,
-      y: baseY + lateral.y * noise,
-    }
-
-    points.push(current)
-
-    if (Math.random() < branchProbability * (0.2 + energy * 0.42)) {
-      const branchAngle = angle + randomBetween(-1.1, 1.1)
-      const branchDirection = {
-        x: Math.cos(branchAngle),
-        y: Math.sin(branchAngle),
-      }
-
-      branches.push(
-        createBranchFromPoint(
-          current,
-          branchDirection,
-          sway * 0.7,
-          energy,
-          arcLength * randomBetween(0.1, 0.24)
-        )
-      )
-    }
-  }
-
-  points.push(end)
-
-  return {
-    id: `${performance.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    bornAt: performance.now(),
-    lifeMs: randomBetween(70, 120 + energy * 220),
-    thickness: randomBetween(1, 1.2 + energy * 1.5),
-    intensity: randomBetween(0.78, 1),
-    points,
-    branches,
-  }
 }
 
 function formatCuritibaTime(now: Date) {
@@ -230,6 +51,17 @@ function formatCuritibaTime(now: Date) {
     minute: "2-digit",
     timeZone: "America/Sao_Paulo",
   }).format(now)
+}
+
+function getFallbackVisual(): VisualState {
+  return mapWeatherToLightning({
+    weatherCode: 0,
+    cloudCover: 20,
+    precipitation: 0,
+    windSpeed: 8,
+    windGusts: 14,
+    temperature: 14,
+  })
 }
 
 function computeSafeZones(width: number, height: number): SafeZones {
@@ -247,13 +79,13 @@ function computeSafeZones(width: number, height: number): SafeZones {
   const contentHeight = isMobile ? 220 : 230
   const contentLeft = (width - contentWidth) / 2
 
-  const emitterRadius = Math.min(width, height) * (isMobile ? 0.044 : 0.054)
+  const emitterRadius = Math.min(width, height) * (isMobile ? 0.036 : 0.05)
 
   const centerX = width / 2
-  const visualCenterY = height * 0.56
+  const visualCenterY = isMobile ? height * 0.585 : height * 0.66
 
-  const minY = contentTop + contentHeight + 36
-  const maxY = height - 120
+  const minY = contentTop + contentHeight + 18
+  const maxY = height - (isMobile ? 94 : 88)
 
   const emitterX = centerX
   const emitterY = clamp(visualCenterY, minY, maxY)
@@ -278,15 +110,12 @@ function computeSafeZones(width: number, height: number): SafeZones {
   }
 }
 
-export function AboutLightningField({
-  intensity,
-}: AboutLightningFieldProps) {
+export function AboutLightningField({ intensity }: AboutLightningFieldProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const arcsRef = useRef<Arc[]>([])
+  const engineRef = useRef<SimulationEngine | null>(null)
   const visualRef = useRef<VisualState | null>(null)
   const safeZonesRef = useRef<SafeZones | null>(null)
-  const spawnTimerRef = useRef(0)
-  const rafRef = useRef(0)
+  const rafRef = useRef<number | null>(null)
 
   const [temperature, setTemperature] = useState<number | null>(null)
   const [clock, setClock] = useState(() => formatCuritibaTime(new Date()))
@@ -332,18 +161,9 @@ export function AboutLightningField({
         visualRef.current = visual
         setTemperature(data.temperature)
       } catch {
-        const fallback = mapWeatherToLightning({
-          weatherCode: 0,
-          cloudCover: 20,
-          precipitation: 0,
-          windSpeed: 8,
-          windGusts: 14,
-          temperature: 14,
-        })
-
         if (!mounted) return
 
-        visualRef.current = fallback
+        visualRef.current = getFallbackVisual()
         setTemperature(14)
       }
     }
@@ -358,87 +178,77 @@ export function AboutLightningField({
   }, [])
 
   const energyPercent = useMemo(() => {
-    const base =
-      visualRef.current ??
-      mapWeatherToLightning({
-        weatherCode: 0,
-        cloudCover: 20,
-        precipitation: 0,
-        windSpeed: 8,
-        windGusts: 14,
-        temperature: 14,
-      })
-
+    const base = visualRef.current ?? getFallbackVisual()
     return Math.round(clamp(base.energy * intensity, 0, 1) * 100)
   }, [intensity])
 
   useEffect(() => {
-    const canvasElement = canvasRef.current
-    if (!canvasElement) return
+    if (!canvasRef.current) return
 
-    const canvas = canvasElement
-    const context = canvas.getContext("2d")
+    const canvasElement: HTMLCanvasElement = canvasRef.current
+    const context = canvasElement.getContext("2d")
     if (!context) return
 
-    const ctx = context
+    const ctx: CanvasRenderingContext2D = context
 
     function getVisual(): VisualState {
-      const base =
-        visualRef.current ??
-        mapWeatherToLightning({
-          weatherCode: 0,
-          cloudCover: 20,
-          precipitation: 0,
-          windSpeed: 8,
-          windGusts: 14,
-          temperature: 14,
-        })
-
+      const base = visualRef.current ?? getFallbackVisual()
       const adjustedEnergy = clamp(base.energy * intensity, 0, 1)
 
       return {
         ...base,
         energy: adjustedEnergy,
         branchProbability: clamp(
-          base.branchProbability * (0.74 + intensity * 0.92),
+          base.branchProbability * (0.76 + intensity * 0.88),
           0,
           1
         ),
-        sway: base.sway * (0.82 + intensity * 0.76),
+        sway: base.sway * (0.84 + intensity * 0.72),
         glow:
           typeof base.glow === "number"
-            ? base.glow * (0.92 + intensity * 0.42)
+            ? base.glow * (0.94 + intensity * 0.36)
             : 1,
         flashRate:
           typeof base.flashRate === "number"
-            ? base.flashRate * (0.84 + intensity * 0.62)
+            ? base.flashRate * (0.88 + intensity * 0.54)
             : 1,
       }
     }
 
-    function resize() {
+    function resizeCanvas() {
       const ratio = Math.min(window.devicePixelRatio || 1, 2)
-      const width = canvas.offsetWidth
-      const height = canvas.offsetHeight
+      const width = canvasElement.offsetWidth
+      const height = canvasElement.offsetHeight
 
-      canvas.width = Math.floor(width * ratio)
-      canvas.height = Math.floor(height * ratio)
-      canvas.style.width = `${width}px`
-      canvas.style.height = `${height}px`
+      if (width === 0 || height === 0) return
+
+      canvasElement.width = Math.floor(width * ratio)
+      canvasElement.height = Math.floor(height * ratio)
+      canvasElement.style.width = `${width}px`
+      canvasElement.style.height = `${height}px`
 
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0)
-      safeZonesRef.current = computeSafeZones(width, height)
+
+      const zones = computeSafeZones(width, height)
+      safeZonesRef.current = zones
+
+      engineRef.current = new SimulationEngine({
+        width,
+        height,
+        emitterX: zones.emitter.x,
+        emitterY: zones.emitter.y,
+      })
     }
 
     function drawAmbientFog(visual: VisualState) {
       const zones = safeZonesRef.current
       if (!zones) return
 
-      const width = canvas.offsetWidth
-      const height = canvas.offsetHeight
+      const width = canvasElement.offsetWidth
+      const height = canvasElement.offsetHeight
       const { emitter } = zones
 
-      const radius = Math.min(width, height) * (0.24 + visual.energy * 0.14)
+      const radius = Math.min(width, height) * (0.18 + visual.energy * 0.12)
 
       const gradient = ctx.createRadialGradient(
         emitter.x,
@@ -449,8 +259,14 @@ export function AboutLightningField({
         radius
       )
 
-      gradient.addColorStop(0, `rgba(120, 70, 255, ${0.06 + visual.energy * 0.1})`)
-      gradient.addColorStop(0.38, `rgba(45, 110, 255, ${0.05 + visual.energy * 0.08})`)
+      gradient.addColorStop(
+        0,
+        `rgba(120, 70, 255, ${0.045 + visual.energy * 0.08})`
+      )
+      gradient.addColorStop(
+        0.38,
+        `rgba(45, 110, 255, ${0.03 + visual.energy * 0.05})`
+      )
       gradient.addColorStop(1, "rgba(0,0,0,0)")
 
       ctx.beginPath()
@@ -464,12 +280,12 @@ export function AboutLightningField({
       if (!zones) return
 
       const { emitter } = zones
-      const pulse = 0.5 + Math.sin(time * 0.0026) * 0.5
+      const pulse = 0.5 + Math.sin(time * 0.0022) * 0.5
 
       const outerRadius =
-        emitter.radius * (1.55 + pulse * 0.42 + visual.energy * 0.72)
-      const middleRadius = emitter.radius * (1.04 + pulse * 0.18)
-      const innerRadius = emitter.radius * 0.48
+        emitter.radius * (1.5 + pulse * 0.34 + visual.energy * 0.44)
+      const middleRadius = emitter.radius * (1 + pulse * 0.16)
+      const innerRadius = emitter.radius * 0.44
 
       const outerGradient = ctx.createRadialGradient(
         emitter.x,
@@ -479,8 +295,14 @@ export function AboutLightningField({
         emitter.y,
         outerRadius
       )
-      outerGradient.addColorStop(0, `rgba(165,110,255,${0.08 + visual.energy * 0.14})`)
-      outerGradient.addColorStop(0.45, `rgba(55,150,255,${0.07 + visual.energy * 0.1})`)
+      outerGradient.addColorStop(
+        0,
+        `rgba(165,110,255,${0.06 + visual.energy * 0.09})`
+      )
+      outerGradient.addColorStop(
+        0.45,
+        `rgba(55,150,255,${0.04 + visual.energy * 0.06})`
+      )
       outerGradient.addColorStop(1, "rgba(0,0,0,0)")
 
       ctx.beginPath()
@@ -496,8 +318,14 @@ export function AboutLightningField({
         emitter.y,
         middleRadius
       )
-      middleGradient.addColorStop(0, `rgba(255,255,255,${0.22 + visual.energy * 0.18})`)
-      middleGradient.addColorStop(0.38, `rgba(140,90,255,${0.22 + visual.energy * 0.22})`)
+      middleGradient.addColorStop(
+        0,
+        `rgba(255,255,255,${0.2 + visual.energy * 0.12})`
+      )
+      middleGradient.addColorStop(
+        0.38,
+        `rgba(140,90,255,${0.16 + visual.energy * 0.12})`
+      )
       middleGradient.addColorStop(1, "rgba(0,0,0,0)")
 
       ctx.beginPath()
@@ -506,131 +334,90 @@ export function AboutLightningField({
       ctx.fill()
 
       ctx.beginPath()
-      ctx.fillStyle = `rgba(255,255,255,${0.34 + visual.energy * 0.2})`
+      ctx.fillStyle = `rgba(255,255,255,${0.28 + visual.energy * 0.14})`
       ctx.arc(emitter.x, emitter.y, innerRadius, 0, Math.PI * 2)
       ctx.fill()
     }
 
-    function drawArcPath(
-      points: Point[],
-      lifeRatio: number,
-      thickness: number,
-      intensityValue: number
-    ) {
-      pointsToSegmentsPath(ctx, points)
-      ctx.strokeStyle = `rgba(255,255,255,${0.34 + lifeRatio * 0.84 * intensityValue})`
-      ctx.lineWidth = thickness
-      ctx.lineCap = "round"
-      ctx.lineJoin = "round"
-      ctx.stroke()
-
-      pointsToSegmentsPath(ctx, points)
-      ctx.shadowBlur = 24 + thickness * 14
-      ctx.shadowColor = `rgba(145,95,255,${0.24 + lifeRatio * 0.64 * intensityValue})`
-      ctx.strokeStyle = `rgba(145,95,255,${0.22 + lifeRatio * 0.54 * intensityValue})`
-      ctx.lineWidth = thickness * 2.1
-      ctx.stroke()
-
-      pointsToSegmentsPath(ctx, points)
-      ctx.shadowBlur = 34 + thickness * 18
-      ctx.shadowColor = `rgba(65,170,255,${0.14 + lifeRatio * 0.34 * intensityValue})`
-      ctx.strokeStyle = `rgba(65,170,255,${0.12 + lifeRatio * 0.28 * intensityValue})`
-      ctx.lineWidth = thickness * 2.9
-      ctx.stroke()
-
-      ctx.shadowBlur = 0
-      ctx.shadowColor = "transparent"
-    }
-
-    function drawArc(time: number, arc: Arc) {
-      const age = time - arc.bornAt
-      const progress = clamp(age / arc.lifeMs, 0, 1)
-      const flicker = 0.68 + Math.random() * 0.32
-      const lifeRatio = (1 - progress) * flicker
-
-      drawArcPath(arc.points, lifeRatio, arc.thickness, arc.intensity)
-
-      for (const branch of arc.branches) {
-        drawArcPath(
-          branch,
-          lifeRatio * 0.82,
-          arc.thickness * 0.6,
-          arc.intensity * 0.76
-        )
-      }
-    }
-
-    function spawnArcCluster(time: number, visual: VisualState) {
+    function drawMicroDischarges(time: number, visual: VisualState) {
       const zones = safeZonesRef.current
       if (!zones) return
 
-      const width = canvas.offsetWidth
-      const height = canvas.offsetHeight
+      const { emitter } = zones
+      const microCount = 3 + Math.floor(visual.energy * 4)
 
-      const baseCount =
-        visual.mode === "storm"
-          ? 2 + Math.floor(visual.energy * 7)
-          : visual.mode === "unstable"
-          ? 1 + Math.floor(visual.energy * 4)
-          : Math.random() < 0.5
-            ? 1
-            : 0
+      ctx.save()
+      ctx.lineCap = "round"
+      ctx.lineJoin = "round"
 
-      for (let i = 0; i < baseCount; i++) {
-        arcsRef.current.push(
-          generateTeslaArc(
-            zones.emitter,
-            width,
-            height,
-            visual.energy,
-            visual.sway,
-            visual.branchProbability
-          )
-        )
+      for (let i = 0; i < microCount; i++) {
+        const angle = time * 0.0018 + i * 1.7
+        const wobble = Math.sin(angle * 1.4) * 0.8
+        const length = emitter.radius * (0.55 + visual.energy * 0.6)
+
+        const startX = emitter.x + Math.cos(wobble) * emitter.radius * 0.16
+        const startY = emitter.y + Math.sin(wobble) * emitter.radius * 0.16
+        const endX = emitter.x + Math.cos(wobble) * length
+        const endY = emitter.y + Math.sin(wobble) * length
+
+        ctx.beginPath()
+        ctx.moveTo(startX, startY)
+        ctx.lineTo(endX, endY)
+        ctx.strokeStyle = `rgba(180,150,255,${0.1 + visual.energy * 0.1})`
+        ctx.lineWidth = 0.75
+        ctx.stroke()
       }
 
-      const minDelay =
-        visual.mode === "storm" ? 44 : visual.mode === "unstable" ? 84 : 140
-      const maxDelay =
-        visual.mode === "storm" ? 110 : visual.mode === "unstable" ? 210 : 360
-
-      spawnTimerRef.current = time + randomBetween(minDelay, maxDelay)
+      ctx.restore()
     }
 
     function loop(time: number) {
       const visual = getVisual()
+      const engine = engineRef.current
 
-      ctx.clearRect(0, 0, canvas.offsetWidth, canvas.offsetHeight)
+      ctx.clearRect(
+        0,
+        0,
+        canvasElement.offsetWidth,
+        canvasElement.offsetHeight
+      )
 
       drawAmbientFog(visual)
+      drawMicroDischarges(time, visual)
       drawEmitterPulse(time, visual)
 
-      if (time >= spawnTimerRef.current) {
-        spawnArcCluster(time, visual)
-      }
+      if (engine) {
+        const steps =
+          visual.mode === "storm"
+            ? 2 + Math.floor(visual.energy * 2)
+            : visual.mode === "unstable"
+              ? 2
+              : 1
 
-      const nextArcs: Arc[] = []
-
-      for (const arc of arcsRef.current) {
-        if (time - arc.bornAt <= arc.lifeMs) {
-          drawArc(time, arc)
-          nextArcs.push(arc)
+        for (let i = 0; i < steps; i++) {
+          engine.step(0.7 + visual.energy * 0.6)
         }
+
+        ctx.save()
+        ctx.shadowBlur = 18 + visual.energy * 14
+        ctx.shadowColor = `rgba(145,95,255,${0.18 + visual.energy * 0.18})`
+        drawDischarge(ctx, engine.state)
+        ctx.restore()
       }
 
-      arcsRef.current = nextArcs
       rafRef.current = requestAnimationFrame(loop)
     }
 
-    resize()
-    window.addEventListener("resize", resize)
+    resizeCanvas()
+    window.addEventListener("resize", resizeCanvas)
 
-    spawnTimerRef.current = performance.now() + 120
     rafRef.current = requestAnimationFrame(loop)
 
     return () => {
-      cancelAnimationFrame(rafRef.current)
-      window.removeEventListener("resize", resize)
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current)
+      }
+      window.removeEventListener("resize", resizeCanvas)
     }
   }, [intensity])
 
