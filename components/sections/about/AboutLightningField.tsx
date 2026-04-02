@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import { mapWeatherToLightning } from "@/lib/weather/mapWeatherToLightning"
-import { TeslaIntensityKnob } from "@/components/ui/TeslaIntensityKnob"
 
 type WeatherPayload = {
   weatherCode: number
@@ -48,19 +47,12 @@ type SafeZones = {
     width: number
     height: number
   }
-  knobBox: {
-    left: number
-    top: number
-    width: number
-    height: number
-  }
-  badgeBox: {
-    left: number
-    top: number
-    width: number
-    height: number
-  }
   emitter: Emitter
+}
+
+type AboutLightningFieldProps = {
+  intensity: number
+  onIntensityChange?: (value: number) => void
 }
 
 function randomBetween(min: number, max: number) {
@@ -255,20 +247,10 @@ function computeSafeZones(width: number, height: number): SafeZones {
   const contentHeight = isMobile ? 220 : 230
   const contentLeft = (width - contentWidth) / 2
 
-  const knobWidth = 166
-  const knobHeight = 82
-  const knobLeft = 18
-  const knobTop = 18
-
-  const badgeWidth = isMobile ? Math.min(width - 36, 360) : 420
-  const badgeHeight = 34
-  const badgeLeft = 24
-  const badgeTop = height - badgeHeight - 24
-
   const emitterRadius = Math.min(width, height) * (isMobile ? 0.044 : 0.054)
 
   const centerX = width / 2
-  const visualCenterY = height * (isMobile ? 0.56 : 0.56)
+  const visualCenterY = height * 0.56
 
   const minY = contentTop + contentHeight + 36
   const maxY = height - 120
@@ -288,18 +270,6 @@ function computeSafeZones(width: number, height: number): SafeZones {
       width: contentWidth,
       height: contentHeight,
     },
-    knobBox: {
-      left: knobLeft,
-      top: knobTop,
-      width: knobWidth,
-      height: knobHeight,
-    },
-    badgeBox: {
-      left: badgeLeft,
-      top: badgeTop,
-      width: badgeWidth,
-      height: badgeHeight,
-    },
     emitter: {
       x: emitterX,
       y: emitterY,
@@ -308,7 +278,9 @@ function computeSafeZones(width: number, height: number): SafeZones {
   }
 }
 
-export function AboutLightningField() {
+export function AboutLightningField({
+  intensity,
+}: AboutLightningFieldProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const arcsRef = useRef<Arc[]>([])
   const visualRef = useRef<VisualState | null>(null)
@@ -318,7 +290,6 @@ export function AboutLightningField() {
 
   const [temperature, setTemperature] = useState<number | null>(null)
   const [clock, setClock] = useState(() => formatCuritibaTime(new Date()))
-  const [intensity, setIntensity] = useState(0.65)
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -399,7 +370,7 @@ export function AboutLightningField() {
       })
 
     return Math.round(clamp(base.energy * intensity, 0, 1) * 100)
-  }, [intensity, temperature])
+  }, [intensity])
 
   useEffect(() => {
     const canvasElement = canvasRef.current
@@ -602,8 +573,8 @@ export function AboutLightningField() {
           : visual.mode === "unstable"
           ? 1 + Math.floor(visual.energy * 4)
           : Math.random() < 0.5
-          ? 1
-          : 0
+            ? 1
+            : 0
 
       for (let i = 0; i < baseCount; i++) {
         arcsRef.current.push(
@@ -681,14 +652,6 @@ export function AboutLightningField() {
           <span>energia {energyPercent}%</span>
         </div>
       </div>
-
-      <TeslaIntensityKnob
-        value={intensity}
-        onChange={setIntensity}
-        className="absolute bottom-5 right-5 md:bottom-6 md:right-6"
-      />
-
-      
     </>
   )
 }
