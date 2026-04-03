@@ -1,6 +1,8 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
+import { CircleUserRound } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
 import { NAV_ITEMS } from "@/lib/constants/navigation"
 import type { SectionKey } from "@/lib/types/navigation"
@@ -193,59 +195,87 @@ export function Navbar({
                 })}
               </nav>
 
-              <a
-                href="/cv.pdf"
-                download="Marco-Lima-CV.pdf"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={[
-                  "group relative hidden overflow-hidden rounded-full md:inline-flex",
-                  "border border-white/12 bg-white/[0.03] px-4 py-2 text-sm text-white/85",
-                  "transition-all duration-300 ease-out hover:border-white/20 hover:bg-white/[0.07] hover:text-white",
-                ].join(" ")}
-              >
-                <span className="pointer-events-none absolute inset-x-4 top-0 h-px overflow-hidden opacity-80">
-                  <span className="motion-led-flow block h-full w-full bg-gradient-to-r from-transparent via-fuchsia-400/65 to-transparent" />
-                </span>
-                <span className="relative z-[1]">Download CV</span>
-              </a>
+              <div className="flex items-center gap-2">
+                <a
+                  href="/cv.pdf"
+                  download="Marco-Lima-CV.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={[
+                    "group relative hidden overflow-hidden rounded-full md:inline-flex",
+                    "border border-white/12 bg-white/[0.03] px-4 py-2 text-sm text-white/85",
+                    "transition-all duration-300 ease-out hover:border-white/20 hover:bg-white/[0.07] hover:text-white",
+                  ].join(" ")}
+                >
+                  <span className="pointer-events-none absolute inset-x-4 top-0 h-px overflow-hidden opacity-80">
+                    <span className="motion-led-flow block h-full w-full bg-gradient-to-r from-transparent via-fuchsia-400/65 to-transparent" />
+                  </span>
+                  <span className="relative z-[1]">Download CV</span>
+                </a>
 
-              <button
-                type="button"
-                onClick={() => {
-                  setPendingSection(null)
-                  setIsOpen((prev) => !prev)
-                }}
-                aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
-                aria-expanded={isOpen}
-                aria-controls="mobile-menu"
-                className={[
-                  "relative inline-flex h-11 w-11 items-center justify-center rounded-full md:hidden",
-                  "border border-white/10 bg-white/5 text-white",
-                  "transition-all duration-300 ease-out hover:bg-white/10 active:scale-95",
-                ].join(" ")}
-              >
-                <span className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.12),transparent_70%)] opacity-70" />
+                <Link
+                  href="/login"
+                  aria-label="Entrar na área administrativa"
+                  className={[
+                    "group relative hidden h-11 w-11 items-center justify-center overflow-hidden rounded-full md:inline-flex",
+                    "border border-white/12 bg-white/[0.03] text-white/85",
+                    "transition-all duration-300 ease-out hover:border-white/20 hover:bg-white/[0.07] hover:text-white",
+                  ].join(" ")}
+                >
+                  <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,rgba(139,92,246,0.12),transparent_70%)] opacity-70" />
+                  <CircleUserRound className="relative z-[1] h-[18px] w-[18px]" />
+                </Link>
 
-                <span
+                <Link
+                  href="/login"
+                  aria-label="Entrar na área administrativa"
                   className={[
-                    "absolute h-0.5 w-5 rounded-full bg-white transition duration-300",
-                    isOpen ? "rotate-45" : "-translate-y-1.5",
+                    "relative inline-flex h-11 w-11 items-center justify-center rounded-full md:hidden",
+                    "border border-white/10 bg-white/5 text-white",
+                    "transition-all duration-300 ease-out hover:bg-white/10 active:scale-95",
                   ].join(" ")}
-                />
-                <span
+                >
+                  <span className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.12),transparent_70%)] opacity-70" />
+                  <CircleUserRound className="relative z-[1] h-[18px] w-[18px]" />
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPendingSection(null)
+                    setIsOpen((prev) => !prev)
+                  }}
+                  aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
+                  aria-expanded={isOpen}
+                  aria-controls="mobile-menu"
                   className={[
-                    "absolute h-0.5 w-5 rounded-full bg-white transition duration-300",
-                    isOpen ? "opacity-0" : "opacity-100",
+                    "relative inline-flex h-11 w-11 items-center justify-center rounded-full md:hidden",
+                    "border border-white/10 bg-white/5 text-white",
+                    "transition-all duration-300 ease-out hover:bg-white/10 active:scale-95",
                   ].join(" ")}
-                />
-                <span
-                  className={[
-                    "absolute h-0.5 w-5 rounded-full bg-white transition duration-300",
-                    isOpen ? "-rotate-45" : "translate-y-1.5",
-                  ].join(" ")}
-                />
-              </button>
+                >
+                  <span className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.12),transparent_70%)] opacity-70" />
+
+                  <span
+                    className={[
+                      "absolute h-0.5 w-5 rounded-full bg-white transition duration-300",
+                      isOpen ? "rotate-45" : "-translate-y-1.5",
+                    ].join(" ")}
+                  />
+                  <span
+                    className={[
+                      "absolute h-0.5 w-5 rounded-full bg-white transition duration-300",
+                      isOpen ? "opacity-0" : "opacity-100",
+                    ].join(" ")}
+                  />
+                  <span
+                    className={[
+                      "absolute h-0.5 w-5 rounded-full bg-white transition duration-300",
+                      isOpen ? "-rotate-45" : "translate-y-1.5",
+                    ].join(" ")}
+                  />
+                </button>
+              </div>
             </div>
 
             <div
@@ -327,9 +357,28 @@ export function Navbar({
                       </a>
                     </div>
 
+                    <div className="mt-2 grid grid-cols-2 gap-2">
+                      <Link
+                        href="/login"
+                        className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/12 bg-white/10 px-3 py-2 text-[10px] uppercase tracking-[0.22em] text-white/85 transition-colors duration-200 hover:border-white/20 hover:text-white active:bg-white/10 focus:outline-none focus-visible:outline-none"
+                      >
+                        Admin
+                      </Link>
+
+                      <a
+                        href="/cv.pdf"
+                        download="Marco-Lima-CV.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/12 bg-white/10 px-3 py-2 text-[10px] uppercase tracking-[0.22em] text-white/85 transition-colors duration-200 hover:border-white/20 hover:text-white active:bg-white/10 focus:outline-none focus-visible:outline-none"
+                      >
+                        CV
+                      </a>
+                    </div>
+
                     <a
                       href="/cv.pdf"
-                      download="cv.pdf"
+                      download="Marco-Lima-CV.pdf"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="relative mt-2 inline-flex min-h-11 w-full items-center justify-center overflow-hidden rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm text-white/90 transition-colors duration-200 hover:border-white/20 hover:text-white active:bg-white/10 focus:outline-none focus-visible:outline-none"
