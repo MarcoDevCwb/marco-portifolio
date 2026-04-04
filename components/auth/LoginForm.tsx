@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useActionState, useState } from "react"
 import { Eye, EyeOff, LockKeyhole, Mail } from "lucide-react"
-import { loginAction } from "@/app/login/actions"
+import { loginAction } from "@/app/(public)/login/actions"
 
 type LoginState = {
   error?: string

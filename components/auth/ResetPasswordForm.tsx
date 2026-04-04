@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react"
 import { Eye, EyeOff, LockKeyhole } from "lucide-react"
-import { resetPasswordAction } from "@/app/auth/update-password/actions"
+import { resetPasswordAction } from "@/app/(public)/auth/update-password/actions"
 
 type ResetPasswordState = {
   error?: string

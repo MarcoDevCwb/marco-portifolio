@@ -2,7 +2,7 @@
 
 import { useActionState } from "react"
 import { Mail } from "lucide-react"
-import { forgotPasswordAction } from "@/app/forgot-password/actions"
+import { forgotPasswordAction } from "@/app/(public)/forgot-password/actions"
 
 type ForgotPasswordState = {
   error?: string
