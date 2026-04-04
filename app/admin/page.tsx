@@ -23,11 +23,7 @@ export default async function AdminPage() {
           Painel administrativo
         </h1>
 
-        <p className="mt-4 text-white/65">Ambiente protegido com Supabase.</p>
-
-        <div className="mt-8 rounded-3xl border border-white/10 bg-black/30 p-6">
-          <p className="text-white/75">Logado como: {user.email}</p>
-        </div>
+        <p className="mt-4 text-white/65">Logado como: {user.email}</p>
       </div>
     </main>
   )

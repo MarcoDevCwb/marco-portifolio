@@ -5,9 +5,7 @@ export function createClient() {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error(
-      "Supabase URL e ANON KEY são obrigatórios no client."
-    )
+    throw new Error("Supabase URL e ANON KEY são obrigatórios no client.")
   }
 
   return createBrowserClient(supabaseUrl, supabaseAnonKey)

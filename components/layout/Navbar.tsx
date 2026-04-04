@@ -196,6 +196,19 @@ export function Navbar({
               </nav>
 
               <div className="flex items-center gap-2">
+                <Link
+                  href="/login"
+                  aria-label="Entrar na área administrativa"
+                  className={[
+                    "group relative hidden h-11 w-11 items-center justify-center overflow-hidden rounded-full md:inline-flex",
+                    "border border-white/12 bg-white/[0.03] text-white/85",
+                    "transition-all duration-300 ease-out hover:border-white/20 hover:bg-white/[0.07] hover:text-white",
+                  ].join(" ")}
+                >
+                  <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,rgba(139,92,246,0.12),transparent_70%)] opacity-70" />
+                  <CircleUserRound className="relative z-[1] h-[18px] w-[18px]" />
+                </Link>
+
                 <a
                   href="/cv.pdf"
                   download="Marco-Lima-CV.pdf"
@@ -212,19 +225,6 @@ export function Navbar({
                   </span>
                   <span className="relative z-[1]">Download CV</span>
                 </a>
-
-                <Link
-                  href="/login"
-                  aria-label="Entrar na área administrativa"
-                  className={[
-                    "group relative hidden h-11 w-11 items-center justify-center overflow-hidden rounded-full md:inline-flex",
-                    "border border-white/12 bg-white/[0.03] text-white/85",
-                    "transition-all duration-300 ease-out hover:border-white/20 hover:bg-white/[0.07] hover:text-white",
-                  ].join(" ")}
-                >
-                  <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle,rgba(139,92,246,0.12),transparent_70%)] opacity-70" />
-                  <CircleUserRound className="relative z-[1] h-[18px] w-[18px]" />
-                </Link>
 
                 <Link
                   href="/login"

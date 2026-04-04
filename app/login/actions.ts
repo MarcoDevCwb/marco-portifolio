@@ -3,14 +3,14 @@
 import { redirect } from "next/navigation"
 import { createClient } from "@/lib/supabase/server"
 
-type LoginResult = {
+type LoginState = {
   error?: string
 }
 
 export async function loginAction(
-  _prevState: LoginResult,
+  _prevState: LoginState,
   formData: FormData
-): Promise<LoginResult> {
+): Promise<LoginState> {
   const email = String(formData.get("email") ?? "").trim()
   const password = String(formData.get("password") ?? "")
 

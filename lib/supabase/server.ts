@@ -6,9 +6,7 @@ export async function createClient() {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error(
-      "Supabase URL e ANON KEY são obrigatórios no server."
-    )
+    throw new Error("Supabase URL e ANON KEY são obrigatórios no server.")
   }
 
   const cookieStore = await cookies()
@@ -23,9 +21,7 @@ export async function createClient() {
           cookiesToSet.forEach(({ name, value, options }) => {
             cookieStore.set(name, value, options)
           })
-        } catch {
-          // Em alguns contextos server-only o set pode não estar disponível.
-        }
+        } catch {}
       },
     },
   })
