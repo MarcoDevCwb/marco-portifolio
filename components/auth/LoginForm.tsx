@@ -13,84 +13,61 @@ const initialState: LoginState = {}
 
 export function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
+
   const [state, formAction, pending] = useActionState(
     loginAction,
     initialState
   )
 
   return (
-    <div className="rounded-[32px] border border-white/10 bg-white/[0.03] p-6 shadow-[0_16px_50px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:p-8">
-      <div className="mb-8">
-        <span className="inline-flex rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-[11px] uppercase tracking-[0.24em] text-white/50">
-          Sign in
-        </span>
-
-        <h2 className="mt-5 text-3xl font-semibold tracking-[-0.03em] text-white">
-          Entrar
-        </h2>
-
-        <p className="mt-3 text-sm leading-7 text-white/58">
-          Use suas credenciais para acessar o ambiente administrativo.
-        </p>
+    <div className="relative overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.03] p-6 shadow-[0_16px_50px_rgba(0,0,0,0.35)] backdrop-blur-xl sm:p-7">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.05),transparent_32%),radial-gradient(circle_at_bottom,rgba(139,92,246,0.10),transparent_28%)]" />
+        <div className="absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-white/12 to-transparent" />
       </div>
 
-      <form action={formAction} className="space-y-4">
-        <div>
-          <label className="mb-2 block text-sm text-white/70">Email</label>
-          <div className="relative">
-            <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/35">
-              <Mail className="h-4 w-4" />
-            </span>
+      <form action={formAction} className="relative space-y-4">
+        <div className="relative">
+          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/30">
+            <Mail className="h-4 w-4" />
+          </span>
 
-            <input
-              name="email"
-              type="email"
-              placeholder="voce@dominio.com"
-              autoComplete="email"
-              className="h-14 w-full rounded-2xl border border-white/10 bg-black/40 pl-12 pr-4 text-white outline-none placeholder:text-white/28 focus:border-violet-400/40"
-              required
-            />
-          </div>
+          <input
+            name="email"
+            type="email"
+            placeholder="voce@dominio.com"
+            autoComplete="email"
+            className="h-14 w-full rounded-2xl border border-white/10 bg-black/40 pl-12 pr-4 text-white outline-none transition placeholder:text-white/28 focus:border-violet-400/40 focus:bg-black/55"
+            required
+          />
         </div>
 
-        <div>
-          <div className="mb-2 flex items-center justify-between">
-            <label className="block text-sm text-white/70">Senha</label>
+        <div className="relative">
+          <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/30">
+            <LockKeyhole className="h-4 w-4" />
+          </span>
 
-            <Link
-              href="/forgot-password"
-              className="text-xs text-white/52 transition hover:text-white"
-            >
-              Esqueci minha senha
-            </Link>
-          </div>
+          <input
+            name="password"
+            type={showPassword ? "text" : "password"}
+            placeholder="••••••••"
+            autoComplete="current-password"
+            className="h-14 w-full rounded-2xl border border-white/10 bg-black/40 pl-12 pr-14 text-white outline-none transition placeholder:text-white/28 focus:border-violet-400/40 focus:bg-black/55"
+            required
+          />
 
-          <div className="relative">
-            <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/35">
-              <LockKeyhole className="h-4 w-4" />
-            </span>
-
-            <input
-              name="password"
-              type={showPassword ? "text" : "password"}
-              placeholder="••••••••"
-              autoComplete="current-password"
-              className="h-14 w-full rounded-2xl border border-white/10 bg-black/40 pl-12 pr-14 text-white outline-none placeholder:text-white/28 focus:border-violet-400/40"
-              required
-            />
-
-            <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-white/45 transition hover:text-white"
-            >
-              {showPassword ? (
-                <EyeOff className="h-4 w-4" />
-              ) : (
-                <Eye className="h-4 w-4" />
-              )}
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 transition hover:text-white"
+          >
+            {showPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
+          </button>
         </div>
 
         {state?.error ? (
@@ -99,13 +76,34 @@ export function LoginForm() {
           </div>
         ) : null}
 
-        <button
-          type="submit"
-          disabled={pending}
-          className="inline-flex h-14 w-full items-center justify-center rounded-2xl border border-white/10 bg-white text-sm font-medium text-black transition hover:opacity-92 disabled:cursor-not-allowed disabled:opacity-70"
-        >
-          {pending ? "Entrando..." : "Acessar painel"}
-        </button>
+        <div className="pt-2">
+          <button
+  type="submit"
+  className="
+    group relative inline-flex h-14 w-full items-center justify-center overflow-hidden
+    rounded-2xl border border-white/10
+    bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0.03)_100%)]
+    text-sm font-medium text-white
+    shadow-[0_16px_50px_rgba(0,0,0,0.38)]
+    backdrop-blur-xl
+    transition-all duration-300
+    hover:border-fuchsia-400/20 hover:shadow-[0_18px_60px_rgba(168,85,247,0.12)]
+    active:scale-[0.985]
+    disabled:cursor-not-allowed disabled:opacity-60
+  "
+>
+  <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.12),transparent_40%),linear-gradient(90deg,rgba(168,85,247,0.10),rgba(217,70,239,0.06),rgba(59,130,246,0.08))]" />
+  <span className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+  <span className="relative z-[1]">Acessar painel</span>
+</button>
+
+          <a
+  href="/forgot-password"
+  className="mt-4 inline-flex w-full items-center justify-center text-sm text-white/52 transition hover:text-white/75"
+>
+  Esqueci minha senha
+</a>
+        </div>
       </form>
     </div>
   )
