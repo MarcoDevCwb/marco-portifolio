@@ -457,3 +457,6 @@ canvas {
     transition-delay: 0ms !important;
   }
 }
+nextjs-portal {
+  display: none !important;
+}
