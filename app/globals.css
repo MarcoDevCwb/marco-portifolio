@@ -1,12 +1,22 @@
 @import "tailwindcss";
 
+/* =========================================================
+   TOKENS GLOBAIS
+   ========================================================= */
+
 :root {
   color-scheme: dark;
+
   --navbar-offset: 92px;
   --footer-offset: 86px;
   --viewport-side-padding: 12px;
   --viewport-gap-top: 12px;
-  --viewport-gap-bottom: 16px;
+  --viewport-gap-bottom: 18px;
+
+  /* frame principal */
+  --app-shell-max-width: 72rem;
+  --app-shell-radius: 28px;
+  --app-shell-min-height: clamp(540px, 72vh, 760px);
 }
 
 @media (min-width: 640px) {
@@ -14,8 +24,15 @@
     --navbar-offset: 96px;
     --footer-offset: 92px;
     --viewport-side-padding: 16px;
+    --viewport-gap-top: 12px;
+    --viewport-gap-bottom: 20px;
+    --app-shell-radius: 30px;
   }
 }
+
+/* =========================================================
+   RESET / BASE
+   ========================================================= */
 
 html,
 body {
@@ -64,8 +81,17 @@ canvas {
   min-height: 100%;
 }
 
-/* VIEWPORT PRINCIPAL */
-.main-viewport {
+/* =========================================================
+   FRAME COMPARTILHADO
+   ========================================================= */
+
+.app-frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.app-frame__viewport {
   position: absolute;
   left: 0;
   right: 0;
@@ -76,24 +102,40 @@ canvas {
   overflow: hidden;
 }
 
-.main-viewport__inner {
+.app-frame__inner {
   display: flex;
   flex-direction: column;
+  width: 100%;
   height: 100%;
   min-height: 0;
-  width: 100%;
-  max-width: 72rem;
+  max-width: var(--app-shell-max-width);
   margin-inline: auto;
+}
+
+/* =========================================================
+   VIEWPORT DE CONTEÚDO
+   ========================================================= */
+
+.main-viewport {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
 }
 
 .main-viewport__content {
   display: flex;
   flex-direction: column;
+  width: 100%;
   height: 100%;
   min-height: 0;
 }
 
-/* HERO BASE */
+/* =========================================================
+   HERO / SEÇÕES
+   ========================================================= */
+
 .hero-section {
   position: relative;
   width: 100%;
@@ -127,8 +169,8 @@ canvas {
   left: 1.5rem;
   right: 1.5rem;
   bottom: 1rem;
-  max-width: 320px;
   z-index: 2;
+  max-width: 320px;
 }
 
 .hero-eyebrow {
@@ -156,7 +198,40 @@ canvas {
   color: rgba(255, 255, 255, 0.6);
 }
 
-/* TABLET / DESKTOP */
+/* =========================================================
+   FOOTER DO PORTFÓLIO
+   ========================================================= */
+
+.footer-dock {
+  pointer-events: auto;
+}
+
+.footer-dock__frame {
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+}
+
+.footer-dock__shell {
+  width: 100%;
+}
+
+/* =========================================================
+   MENU MOBILE
+   ========================================================= */
+
+#mobile-menu {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+#mobile-menu::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* =========================================================
+   RESPONSIVO - TABLET / DESKTOP
+   ========================================================= */
+
 @media (min-width: 768px) {
   .hero-copy {
     left: 2rem;
@@ -185,7 +260,10 @@ canvas {
   }
 }
 
-/* MOBILE RETRATO */
+/* =========================================================
+   RESPONSIVO - MOBILE RETRATO
+   ========================================================= */
+
 @media (max-width: 767px) and (orientation: portrait) {
   .hero-image {
     object-fit: cover;
@@ -216,40 +294,32 @@ canvas {
   }
 }
 
-/* FOOTER */
-.footer-dock {
-  pointer-events: auto;
+/* =========================================================
+   ALTURA BAIXA
+   ========================================================= */
+
+@media (max-height: 760px) {
+  :root {
+    --app-shell-min-height: clamp(500px, 70vh, 700px);
+  }
 }
 
-.footer-dock__frame {
-  padding-bottom: max(8px, env(safe-area-inset-bottom));
+@media (max-height: 680px) {
+  :root {
+    --app-shell-min-height: clamp(460px, 68vh, 640px);
+  }
 }
 
-.footer-dock__shell {
-  width: 100%;
-}
+/* =========================================================
+   MOBILE LANDSCAPE / ALTURA BAIXA
+   ========================================================= */
 
-/* MENU MOBILE */
-#mobile-menu {
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-
-#mobile-menu::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-
-/* SOMENTE CELULAR DEITADO / ALTURA BAIXA */
 @media (max-height: 500px) and (max-width: 950px) and (orientation: landscape) {
   :root {
     --footer-offset: 58px;
     --viewport-gap-top: 8px;
-    --viewport-gap-bottom: 6px;
-  }
-
-  .main-viewport {
-    bottom: calc(var(--footer-offset) + var(--viewport-gap-bottom));
+    --viewport-gap-bottom: 8px;
+    --app-shell-min-height: clamp(320px, 72vh, 430px);
   }
 
   .footer-dock__frame {
@@ -360,6 +430,10 @@ canvas {
   }
 }
 
+/* =========================================================
+   ANIMAÇÕES
+   ========================================================= */
+
 @keyframes led-flow {
   0% {
     transform: translateX(-42%);
@@ -444,6 +518,10 @@ canvas {
   animation: icon-breathe 4.2s ease-in-out infinite;
 }
 
+/* =========================================================
+   ACESSIBILIDADE
+   ========================================================= */
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -457,6 +535,11 @@ canvas {
     transition-delay: 0ms !important;
   }
 }
+
+/* =========================================================
+   NEXT DEV OVERLAY
+   ========================================================= */
+
 nextjs-portal {
   display: none !important;
 }
