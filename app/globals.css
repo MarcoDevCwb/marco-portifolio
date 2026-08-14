@@ -1,22 +1,12 @@
 @import "tailwindcss";
 
-/* =========================================================
-   TOKENS GLOBAIS
-   ========================================================= */
-
 :root {
   color-scheme: dark;
-
   --navbar-offset: 92px;
   --footer-offset: 86px;
   --viewport-side-padding: 12px;
   --viewport-gap-top: 12px;
-  --viewport-gap-bottom: 18px;
-
-  /* frame principal */
-  --app-shell-max-width: 72rem;
-  --app-shell-radius: 28px;
-  --app-shell-min-height: clamp(540px, 72vh, 760px);
+  --viewport-gap-bottom: 16px;
 }
 
 @media (min-width: 640px) {
@@ -24,15 +14,8 @@
     --navbar-offset: 96px;
     --footer-offset: 92px;
     --viewport-side-padding: 16px;
-    --viewport-gap-top: 12px;
-    --viewport-gap-bottom: 20px;
-    --app-shell-radius: 30px;
   }
 }
-
-/* =========================================================
-   RESET / BASE
-   ========================================================= */
 
 html,
 body {
@@ -81,17 +64,8 @@ canvas {
   min-height: 100%;
 }
 
-/* =========================================================
-   FRAME COMPARTILHADO
-   ========================================================= */
-
-.app-frame {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-}
-
-.app-frame__viewport {
+/* VIEWPORT PRINCIPAL */
+.main-viewport {
   position: absolute;
   left: 0;
   right: 0;
@@ -102,40 +76,24 @@ canvas {
   overflow: hidden;
 }
 
-.app-frame__inner {
+.main-viewport__inner {
   display: flex;
   flex-direction: column;
-  width: 100%;
   height: 100%;
   min-height: 0;
-  max-width: var(--app-shell-max-width);
+  width: 100%;
+  max-width: 72rem;
   margin-inline: auto;
-}
-
-/* =========================================================
-   VIEWPORT DE CONTEÚDO
-   ========================================================= */
-
-.main-viewport {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  min-height: 0;
 }
 
 .main-viewport__content {
   display: flex;
   flex-direction: column;
-  width: 100%;
   height: 100%;
   min-height: 0;
 }
 
-/* =========================================================
-   HERO / SEÇÕES
-   ========================================================= */
-
+/* HERO BASE */
 .hero-section {
   position: relative;
   width: 100%;
@@ -169,8 +127,8 @@ canvas {
   left: 1.5rem;
   right: 1.5rem;
   bottom: 1rem;
-  z-index: 2;
   max-width: 320px;
+  z-index: 2;
 }
 
 .hero-eyebrow {
@@ -198,40 +156,7 @@ canvas {
   color: rgba(255, 255, 255, 0.6);
 }
 
-/* =========================================================
-   FOOTER DO PORTFÓLIO
-   ========================================================= */
-
-.footer-dock {
-  pointer-events: auto;
-}
-
-.footer-dock__frame {
-  padding-bottom: max(8px, env(safe-area-inset-bottom));
-}
-
-.footer-dock__shell {
-  width: 100%;
-}
-
-/* =========================================================
-   MENU MOBILE
-   ========================================================= */
-
-#mobile-menu {
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-
-#mobile-menu::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-
-/* =========================================================
-   RESPONSIVO - TABLET / DESKTOP
-   ========================================================= */
-
+/* TABLET / DESKTOP */
 @media (min-width: 768px) {
   .hero-copy {
     left: 2rem;
@@ -260,10 +185,7 @@ canvas {
   }
 }
 
-/* =========================================================
-   RESPONSIVO - MOBILE RETRATO
-   ========================================================= */
-
+/* MOBILE RETRATO */
 @media (max-width: 767px) and (orientation: portrait) {
   .hero-image {
     object-fit: cover;
@@ -294,32 +216,40 @@ canvas {
   }
 }
 
-/* =========================================================
-   ALTURA BAIXA
-   ========================================================= */
-
-@media (max-height: 760px) {
-  :root {
-    --app-shell-min-height: clamp(500px, 70vh, 700px);
-  }
+/* FOOTER */
+.footer-dock {
+  pointer-events: auto;
 }
 
-@media (max-height: 680px) {
-  :root {
-    --app-shell-min-height: clamp(460px, 68vh, 640px);
-  }
+.footer-dock__frame {
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
 }
 
-/* =========================================================
-   MOBILE LANDSCAPE / ALTURA BAIXA
-   ========================================================= */
+.footer-dock__shell {
+  width: 100%;
+}
 
+/* MENU MOBILE */
+#mobile-menu {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+#mobile-menu::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* SOMENTE CELULAR DEITADO / ALTURA BAIXA */
 @media (max-height: 500px) and (max-width: 950px) and (orientation: landscape) {
   :root {
     --footer-offset: 58px;
     --viewport-gap-top: 8px;
-    --viewport-gap-bottom: 8px;
-    --app-shell-min-height: clamp(320px, 72vh, 430px);
+    --viewport-gap-bottom: 6px;
+  }
+
+  .main-viewport {
+    bottom: calc(var(--footer-offset) + var(--viewport-gap-bottom));
   }
 
   .footer-dock__frame {
@@ -430,10 +360,6 @@ canvas {
   }
 }
 
-/* =========================================================
-   ANIMAÇÕES
-   ========================================================= */
-
 @keyframes led-flow {
   0% {
     transform: translateX(-42%);
@@ -518,9 +444,31 @@ canvas {
   animation: icon-breathe 4.2s ease-in-out infinite;
 }
 
-/* =========================================================
-   ACESSIBILIDADE
-   ========================================================= */
+/* Alterna 5 previews em loop dentro do mesmo espaço, uma de cada vez,
+   sem JS: cada slide ganha 4s de um ciclo de 20s via animation-delay,
+   com 1s de crossfade nas bordas. */
+@keyframes preview-cycle {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  5%,
+  15% {
+    opacity: 1;
+  }
+  20% {
+    opacity: 0;
+  }
+}
+
+.motion-preview-slide {
+  animation: preview-cycle 20s ease-in-out infinite;
+}
+.motion-preview-slide:nth-child(1) { animation-delay: 0s; }
+.motion-preview-slide:nth-child(2) { animation-delay: 4s; }
+.motion-preview-slide:nth-child(3) { animation-delay: 8s; }
+.motion-preview-slide:nth-child(4) { animation-delay: 12s; }
+.motion-preview-slide:nth-child(5) { animation-delay: 16s; }
 
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -534,12 +482,18 @@ canvas {
     transition-duration: 0.01ms !important;
     transition-delay: 0ms !important;
   }
+
+  /* A troca de peças no card da biblioteca é a própria demonstração do
+     produto, não decoração à toa — continua rodando mesmo aqui. */
+  .motion-preview-slide {
+    animation: preview-cycle 20s ease-in-out infinite !important;
+  }
+  .motion-preview-slide:nth-child(1) { animation-delay: 0s !important; }
+  .motion-preview-slide:nth-child(2) { animation-delay: 4s !important; }
+  .motion-preview-slide:nth-child(3) { animation-delay: 8s !important; }
+  .motion-preview-slide:nth-child(4) { animation-delay: 12s !important; }
+  .motion-preview-slide:nth-child(5) { animation-delay: 16s !important; }
 }
-
-/* =========================================================
-   NEXT DEV OVERLAY
-   ========================================================= */
-
 nextjs-portal {
   display: none !important;
 }

@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ["lucide-react"],
   },
 
+  async rewrites() {
+    return [{ source: "/lab", destination: "/lab/index.html" }];
+  },
+
   images: {
     formats: ["image/avif", "image/webp"],
   },

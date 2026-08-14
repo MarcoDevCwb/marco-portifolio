@@ -1,0 +1,130 @@
+@view-transition {
+  navigation: auto;
+}
+
+:root {
+  --bg: #07070c;
+  --surface: #131320;
+  --text: #f3f3f8;
+  --muted: #9797ab;
+  --accent: #7c5cff;
+  --accent-2: #ff5ca8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+.back-link {
+  position: fixed;
+  top: 1.1rem;
+  right: 1.3rem;
+  z-index: 20;
+  padding: .4rem .9rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.14);
+  color: var(--muted);
+  text-decoration: none;
+  font-size: .8rem;
+  backdrop-filter: blur(10px);
+  transition: color .2s ease, border-color .2s ease;
+}
+.back-link:hover { color: var(--text); border-color: var(--accent); }
+
+.intro, .outro {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 2rem;
+}
+
+.eyebrow {
+  font-size: .78rem;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.intro h1, .outro h2 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+  max-width: 16ch;
+  font-weight: 800;
+  letter-spacing: -.01em;
+}
+
+.intro p, .outro p {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.intro p code, .outro p code {
+  background: var(--surface);
+  padding: .15rem .45rem;
+  border-radius: 6px;
+  color: var(--accent);
+  font-size: .9em;
+}
+
+.scroll-hint {
+  margin-top: .8rem;
+  color: var(--muted);
+  font-size: .85rem;
+  animation: bob 1.8s ease-in-out infinite;
+}
+@keyframes bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-hint { animation: none; }
+}
+
+.scrub-section {
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  background: #000;
+}
+
+#scrub-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.scrub-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 4px;
+  background: rgba(255,255,255,.12);
+  z-index: 2;
+}
+.scrub-progress .bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
+
+@media (max-width: 640px) {
+  .intro, .outro { padding: 1.5rem; gap: .8rem; }
+  .back-link { top: .8rem; right: .9rem; padding: .35rem .7rem; font-size: .72rem; }
+}

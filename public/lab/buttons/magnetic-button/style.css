@@ -1,0 +1,168 @@
+@view-transition {
+  navigation: auto;
+}
+
+@property --angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+:root {
+  --bg: #0b0b12;
+  --text: #f3f3f8;
+  --muted: #8d8da3;
+  --accent: #7c5cff;
+  --accent-2: #ff5ca8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Segoe UI", system-ui, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.back-link {
+  position: fixed;
+  top: 1.1rem;
+  right: 1.3rem;
+  z-index: 10;
+  padding: .4rem .9rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.14);
+  color: var(--muted);
+  text-decoration: none;
+  font-size: .8rem;
+  backdrop-filter: blur(10px);
+  transition: color .2s ease, border-color .2s ease;
+}
+.back-link:hover { color: var(--text); border-color: var(--accent); }
+
+.stage {
+  text-align: center;
+  padding: 2rem;
+}
+
+.hint {
+  color: var(--muted);
+  margin-bottom: 2.5rem;
+  font-size: .95rem;
+}
+
+.row {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.magnetic {
+  position: relative;
+  padding: 1.1rem 2.4rem;
+  border: none;
+  border-radius: 999px;
+  background: #14141f;
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  isolation: isolate;
+  will-change: transform;
+}
+
+.magnetic-inner { position: relative; z-index: 2; }
+
+/* Anéis pulsando continuamente ao redor do botão */
+.magnetic.pulse::before,
+.magnetic.pulse::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid var(--accent);
+  opacity: 0;
+  animation: pulse-ring 2.4s ease-out infinite;
+}
+.magnetic.pulse::after {
+  animation-delay: 1.2s;
+  border-color: var(--accent-2);
+}
+
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: .55; }
+  100% { transform: scale(1.55); opacity: 0; }
+}
+
+/* Borda giratória contínua via conic-gradient + @property --angle */
+.magnetic.spin-border {
+  background: #14141f;
+}
+.magnetic.spin-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+  border-radius: inherit;
+  background: conic-gradient(from var(--angle), var(--accent), var(--accent-2), var(--accent));
+  animation: spin-angle 3s linear infinite;
+}
+.magnetic.spin-border::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: #14141f;
+}
+
+@keyframes spin-angle {
+  to { --angle: 360deg; }
+}
+
+.ripple {
+  position: absolute;
+  z-index: 3;
+  border-radius: 50%;
+  background: rgba(255,255,255,.35);
+  transform: scale(0);
+  pointer-events: none;
+  animation: ripple-out .6s ease-out forwards;
+}
+
+@keyframes ripple-out {
+  to { transform: scale(2.5); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .magnetic.pulse::before,
+  .magnetic.pulse::after,
+  .magnetic.spin-border::before {
+    animation: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .back-link {
+    top: .8rem;
+    right: .9rem;
+    padding: .35rem .7rem;
+    font-size: .72rem;
+  }
+
+  .stage { padding: 1.5rem; }
+  .hint { font-size: .85rem; margin-bottom: 2rem; }
+
+  .row { gap: 1.2rem; }
+
+  .magnetic {
+    padding: .9rem 1.8rem;
+    font-size: .9rem;
+  }
+}
