@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import { mapWeatherToLightning } from "@/lib/weather/mapWeatherToLightning"
 import { SimulationEngine } from "@/lib/simulation/systems/simulationEngine"
 import { drawDischarge } from "@/lib/simulation/render/arcPainter"
@@ -43,14 +43,6 @@ type AboutLightningFieldProps = {
 
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value))
-}
-
-function formatCuritibaTime(now: Date) {
-  return new Intl.DateTimeFormat("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "America/Sao_Paulo",
-  }).format(now)
 }
 
 function getFallbackVisual(): VisualState {
@@ -117,17 +109,6 @@ export function AboutLightningField({ intensity }: AboutLightningFieldProps) {
   const safeZonesRef = useRef<SafeZones | null>(null)
   const rafRef = useRef<number | null>(null)
 
-  const [temperature, setTemperature] = useState<number | null>(null)
-  const [clock, setClock] = useState(() => formatCuritibaTime(new Date()))
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setClock(formatCuritibaTime(new Date()))
-    }, 1000)
-
-    return () => window.clearInterval(timer)
-  }, [])
-
   useEffect(() => {
     let mounted = true
 
@@ -159,12 +140,10 @@ export function AboutLightningField({ intensity }: AboutLightningFieldProps) {
         if (!mounted) return
 
         visualRef.current = visual
-        setTemperature(data.temperature)
       } catch {
         if (!mounted) return
 
         visualRef.current = getFallbackVisual()
-        setTemperature(14)
       }
     }
 
@@ -176,11 +155,6 @@ export function AboutLightningField({ intensity }: AboutLightningFieldProps) {
       window.clearInterval(interval)
     }
   }, [])
-
-  const energyPercent = useMemo(() => {
-    const base = visualRef.current ?? getFallbackVisual()
-    return Math.round(clamp(base.energy * intensity, 0, 1) * 100)
-  }, [intensity])
 
   useEffect(() => {
     if (!canvasRef.current) return
@@ -428,17 +402,6 @@ export function AboutLightningField({ intensity }: AboutLightningFieldProps) {
         className="absolute inset-0 h-full w-full opacity-[0.96]"
       />
 
-      <div className="pointer-events-none absolute inset-x-0 top-6 z-20 flex justify-center">
-        <div className="flex items-center gap-4 rounded-full border border-white/10 bg-black/30 px-4 py-2 text-[10px] uppercase tracking-[0.24em] text-white/60 backdrop-blur-xl sm:px-6 sm:text-[11px]">
-          <span>{clock}</span>
-          <span>•</span>
-          <span>
-            Curitiba {temperature !== null ? `${Math.round(temperature)}°C` : "--°C"}
-          </span>
-          <span>•</span>
-          <span>energia {energyPercent}%</span>
-        </div>
-      </div>
     </>
   )
 }

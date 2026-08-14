@@ -17,19 +17,28 @@ export function AboutSection() {
 
       <div className="pointer-events-none absolute inset-0 z-[3] bg-black/10" />
 
-      <div className="pointer-events-none absolute inset-0 z-[10]">
-        <div className="relative h-full w-full">
-          <div className="absolute left-1/2 top-[86px] -translate-x-1/2">
-            <span className="text-[10px] uppercase tracking-[0.28em] text-white/58">
-                Sobre
-            </span>
-          </div>
+      <div className="pointer-events-none absolute inset-0 z-[10] flex justify-center overflow-y-auto">
+        <div className="mt-[86px] flex w-[min(92vw,640px)] flex-col items-center px-4 text-center">
+          <span className="text-[10px] uppercase tracking-[0.28em] text-white/58">
+            Sobre
+          </span>
 
-          <div className="absolute left-1/2 top-[116px] w-[min(92vw,680px)] -translate-x-1/2">
-            <h2 className="text-center text-4xl font-semibold leading-[0.95] text-white md:text-6xl">
-                Produto, código e experiência
-            </h2>
-          </div>
+          <h2 className="mt-4 text-4xl font-semibold leading-[0.95] text-white md:text-6xl">
+            Produto, código e experiência
+          </h2>
+
+          <p className="mt-6 max-w-lg text-sm leading-6 text-white/70 md:text-base md:leading-7">
+            Sou desenvolvedor fullstack. Diferente da maioria dos
+            portfólios, o meu não é só projeto de estudo — construí e
+            mantenho em produção minha própria empresa de tecnologia, do
+            primeiro commit a usuários reais.
+          </p>
+
+          <p className="mt-3 max-w-lg text-sm leading-6 text-white/70 md:text-base md:leading-7">
+            O que me diferencia é criatividade e a disposição de aprender
+            o que for preciso, por mais difícil que seja. Hoje, em busca
+            da próxima oportunidade como desenvolvedor.
+          </p>
         </div>
       </div>
 
