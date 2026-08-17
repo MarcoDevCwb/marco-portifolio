@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@property --spin-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
 :root {
   color-scheme: dark;
   --navbar-offset: 92px;
@@ -442,6 +448,79 @@ canvas {
 
 .motion-icon-breathe {
   animation: icon-breathe 4.2s ease-in-out infinite;
+}
+
+@keyframes spin-border {
+  to {
+    --spin-angle: 360deg;
+  }
+}
+
+.motion-spin-border {
+  animation: spin-border 3s linear infinite;
+}
+
+@keyframes led-flow-vertical {
+  0% {
+    transform: translateY(-42%);
+    opacity: 0.16;
+  }
+
+  50% {
+    transform: translateY(0%);
+    opacity: 0.72;
+  }
+
+  100% {
+    transform: translateY(42%);
+    opacity: 0.16;
+  }
+}
+
+.motion-led-flow-vertical {
+  animation: led-flow-vertical 6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes hero-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.035);
+  }
+}
+
+.motion-hero-breathe {
+  animation: hero-breathe 16s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes orbit-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.motion-orbit-spin {
+  animation: orbit-spin 22s linear infinite;
+}
+
+@keyframes dot-grid-fade {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.motion-dot-grid {
+  animation: dot-grid-fade 5s ease-in-out infinite;
 }
 
 /* Alterna 5 previews em loop dentro do mesmo espaço, uma de cada vez,

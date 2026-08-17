@@ -1,4 +1,23 @@
+"use client"
+
 import Image from "next/image"
+import { motion, type Variants } from "framer-motion"
+
+const containerVariants: Variants = {
+  hidden: {},
+  show: {
+    transition: { staggerChildren: 0.12, delayChildren: 0.1 },
+  },
+}
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+  },
+}
 
 export function HeroSection() {
   return (
@@ -26,7 +45,7 @@ export function HeroSection() {
         max-[640px]:[@media(max-height:500px)]:h-full
       "
     >
-      <div className="absolute inset-0">
+      <div className="motion-hero-breathe absolute inset-0">
         <Image
           src="/images/eu.png"
           alt="Retrato de Marco Lima"
@@ -82,7 +101,10 @@ export function HeroSection() {
           [@media(max-height:500px)]:py-5
         "
       >
-        <div
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
           className="
             hero-copy
 
@@ -115,9 +137,10 @@ export function HeroSection() {
             md:[@media(max-height:500px)]:max-w-[320px]
           "
         >
-          <span
+          <motion.span
+            variants={itemVariants}
             className="
-              hero-eyebrow mb-3 block text-[10px] uppercase tracking-[0.32em] text-white/50
+              hero-eyebrow mb-3 inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.32em] text-white/50
               sm:text-[11px]
               md:text-xs
 
@@ -126,10 +149,12 @@ export function HeroSection() {
               [@media(max-height:500px)]:tracking-[0.26em]
             "
           >
+            <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-gradient-to-r from-violet-400 to-fuchsia-400" />
             Desenvolvedor Fullstack
-          </span>
+          </motion.span>
 
-          <h1
+          <motion.h1
+            variants={itemVariants}
             className="
               hero-title text-white font-medium leading-[1.18] tracking-[-0.03em]
               text-[1.15rem]
@@ -144,11 +169,12 @@ export function HeroSection() {
             Crio experiências digitais com foco em{" "}
             <span className="text-fuchsia-400">performance,</span> identidade e
             impacto real.
-          </h1>
+          </motion.h1>
 
-          <p
+          <motion.p
+            variants={itemVariants}
             className="
-              hero-description mt-4 text-white/60 text-[11px] leading-5
+              hero-description mt-4 text-white/60 text-[11px] leading-5 text-justify
               sm:text-xs sm:leading-6
               md:text-sm md:leading-7
 
@@ -160,8 +186,8 @@ export function HeroSection() {
             "
           >
             Produtos digitais com estética, clareza e visão de negócio.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
       </div>
     </section>
   )

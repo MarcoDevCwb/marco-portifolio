@@ -10,7 +10,7 @@ export function StackSection() {
           Tecnologias principais
         </h2>
 
-        <p className="mt-4 max-w-3xl text-sm leading-7 text-white/70 md:text-base">
+        <p className="mt-4 max-w-3xl text-justify text-sm leading-7 text-white/70 md:text-base">
           Next.js, TypeScript, Tailwind CSS, Framer Motion, Supabase e outras
           ferramentas voltadas para aplicações modernas e escaláveis.
         </p>

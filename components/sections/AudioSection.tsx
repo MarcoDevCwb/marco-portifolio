@@ -11,7 +11,7 @@ export function AudioSection() {
             Diferencial criativo em áudio
           </h2>
 
-          <p className="mt-6 max-w-2xl text-base leading-8 text-white/68 sm:text-lg">
+          <p className="mt-6 max-w-2xl text-justify text-base leading-8 text-white/68 sm:text-lg">
             Esta seção vai posicionar meu repertório em áudio como parte da
             minha identidade criativa e do meu diferencial em produto.
           </p>

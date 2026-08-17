@@ -97,7 +97,7 @@ export function HeroMobileLandscape() {
 
             <p
               className="
-                mt-2 text-white/60
+                mt-2 text-white/60 text-justify
                 text-[11px] leading-[1.2rem]
 
                 max-[640px]:mt-1.5
